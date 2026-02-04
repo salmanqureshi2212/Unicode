@@ -224,7 +224,7 @@ router.post("/", auth, upload.single("image"), async (req, res) => {
     const data = {
       image: imageBase64,
       infra_type: issue.category,
-      zone_type: zone,
+      zone_type: zone||"residential",
       lat: issue.location.coordinates[1],
       lng: issue.location.coordinates[0],
     };
