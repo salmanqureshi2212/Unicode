@@ -1,0 +1,131 @@
+"use client"
+
+import { useState, useMemo } from "react"
+import type { Issue, IssueCategory } from "@/lib/types"
+import { issues as initialIssues, employees, jurisdictionZones } from "@/lib/mock-data"
+import { DashboardHeader } from "@/components/dashboard/dashboard-header"
+import { JurisdictionMap } from "@/components/dashboard/jurisdiction-map"
+import { PriorityList } from "@/components/dashboard/priority-list"
+import { IssueDetailPanel } from "@/components/dashboard/issue-detail-panel"
+import { CategoryFilter } from "@/components/dashboard/category-filter"
+import { AIInsightsPanel } from "@/components/dashboard/ai-insights-panel" // Import AIInsightsPanel
+
+export default function ControlRoomDashboard() {
+  const [issues, setIssues] = useState<Issue[]>(initialIssues)
+  const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null)
+  const [selectedCategory, setSelectedCategory] = useState<IssueCategory | "all">("all")
+
+  // Filter issues by category
+  const filteredIssues = useMemo(() => {
+    if (selectedCategory === "all") return issues
+    return issues.filter((issue) => issue.category === selectedCategory)
+  }, [issues, selectedCategory])
+
+  const handleSelectIssue = (issue: Issue) => {
+    setSelectedIssue(issue)
+  }
+
+  const handleCloseDetail = () => {
+    setSelectedIssue(null)
+  }
+
+  const handleSelectCategory = (category: IssueCategory | "all") => {
+    setSelectedCategory(category)
+    setSelectedIssue(null) // Clear selection when changing category
+  }
+
+  const handleAssign = (issueId: string, employeeId: string) => {
+    setIssues((prev) =>
+      prev.map((issue) =>
+        issue.id === issueId
+          ? {
+              ...issue,
+              assignedTo: employeeId || null,
+              status: employeeId ? "assigned" : "open",
+            }
+          : issue
+      )
+    )
+    if (selectedIssue?.id === issueId) {
+      setSelectedIssue((prev) =>
+        prev
+          ? {
+              ...prev,
+              assignedTo: employeeId || null,
+              status: employeeId ? "assigned" : "open",
+            }
+          : null
+      )
+    }
+  }
+
+  const handleResolve = (issueId: string) => {
+    setIssues((prev) =>
+      prev.map((issue) =>
+        issue.id === issueId
+          ? {
+              ...issue,
+              status: "resolved",
+            }
+          : issue
+      )
+    )
+    if (selectedIssue?.id === issueId) {
+      setSelectedIssue((prev) =>
+        prev
+          ? {
+              ...prev,
+              status: "resolved",
+            }
+          : null
+      )
+    }
+  }
+
+  return (
+    <div className="flex h-screen flex-col bg-background">
+      <DashboardHeader issues={issues} />
+
+      <div className="flex flex-1 overflow-hidden">
+        {/* Left Panel - Priority List & Categories */}
+        <aside className="flex w-72 shrink-0 flex-col gap-3 border-r border-border bg-card p-3">
+          <div className="min-h-0 flex-1 overflow-hidden">
+            <PriorityList
+              issues={filteredIssues}
+              selectedIssue={selectedIssue}
+              onSelectIssue={handleSelectIssue}
+            />
+          </div>
+          <CategoryFilter
+            issues={issues}
+            selectedCategory={selectedCategory}
+            onSelectCategory={handleSelectCategory}
+          />
+        </aside>
+
+        {/* Center - Map View (Larger) */}
+        <main className="flex flex-1 flex-col p-3">
+          <div className="flex-1">
+            <JurisdictionMap
+              zones={jurisdictionZones}
+              issues={filteredIssues}
+              selectedIssue={selectedIssue}
+              onSelectIssue={handleSelectIssue}
+            />
+          </div>
+        </main>
+
+        {/* Right Panel - Issue Detail (Narrower) */}
+        <aside className="w-80 shrink-0 border-l border-border bg-background p-3">
+          <IssueDetailPanel
+            issue={selectedIssue}
+            employees={employees}
+            onClose={handleCloseDetail}
+            onAssign={handleAssign}
+            onResolve={handleResolve}
+          />
+        </aside>
+      </div>
+    </div>
+  )
+}
