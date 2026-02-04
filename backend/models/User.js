@@ -30,9 +30,22 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  typeOfUser: {
+    type: String,
+    enum: ['Employee', 'User'],
+    default: 'User'
+  },
   issuesResolved: {
     type: Number,
     default: 0
+  },
+  assignedIssues: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Issue'
+  }],
+  accepted: {
+    type: Boolean,
+    default: false
   },
   avatar: {
     type: String,

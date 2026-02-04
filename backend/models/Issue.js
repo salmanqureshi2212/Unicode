@@ -23,6 +23,9 @@ const issueSchema = new mongoose.Schema({
     required: true,
     enum: ['roads', 'lighting', 'sanitation', 'water', 'electricity', 'parks', 'other']
   },
+  digipin:{
+    type: String,
+  },
   location: {
     type: {
       type: String,
