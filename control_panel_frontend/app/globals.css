@@ -3,45 +3,45 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Dark theme with amber accent - Control Room Dashboard */
+/* Light-blue theme for Control Room Dashboard */
 :root {
-  --background: oklch(0.13 0.005 285);
-  --foreground: oklch(0.98 0 0);
-  --card: oklch(0.18 0.005 285);
-  --card-foreground: oklch(0.98 0 0);
-  --popover: oklch(0.16 0.005 285);
-  --popover-foreground: oklch(0.98 0 0);
-  --primary: oklch(0.82 0.165 75);
-  --primary-foreground: oklch(0.13 0.005 285);
-  --secondary: oklch(0.22 0.005 285);
-  --secondary-foreground: oklch(0.98 0 0);
-  --muted: oklch(0.25 0.005 285);
-  --muted-foreground: oklch(0.65 0 0);
-  --accent: oklch(0.82 0.165 75);
-  --accent-foreground: oklch(0.13 0.005 285);
-  --destructive: oklch(0.65 0.2 25);
-  --destructive-foreground: oklch(0.98 0 0);
-  --warning: oklch(0.75 0.15 60);
-  --warning-foreground: oklch(0.13 0.005 285);
-  --success: oklch(0.7 0.15 145);
-  --success-foreground: oklch(0.13 0.005 285);
-  --border: oklch(0.28 0.005 285);
-  --input: oklch(0.22 0.005 285);
-  --ring: oklch(0.82 0.165 75);
-  --chart-1: oklch(0.82 0.165 75);
-  --chart-2: oklch(0.65 0.2 25);
-  --chart-3: oklch(0.75 0.15 60);
-  --chart-4: oklch(0.7 0.15 145);
-  --chart-5: oklch(0.6 0.15 260);
+  --background: 210 60% 98%;
+  --foreground: 215 12% 12%;
+  --card: 210 60% 100%;
+  --card-foreground: 215 12% 12%;
+  --popover: 210 60% 100%;
+  --popover-foreground: 215 12% 12%;
+  --primary: 205 90% 60%;
+  --primary-foreground: 210 100% 100%;
+  --secondary: 210 30% 96%;
+  --secondary-foreground: 215 12% 12%;
+  --muted: 210 20% 92%;
+  --muted-foreground: 215 10% 45%;
+  --accent: 205 80% 65%;
+  --accent-foreground: 210 100% 100%;
+  --destructive: 0 70% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --warning: 40 90% 60%;
+  --warning-foreground: 210 12% 12%;
+  --success: 140 70% 40%;
+  --success-foreground: 210 100% 100%;
+  --border: 210 16% 88%;
+  --input: 210 16% 96%;
+  --ring: 205 90% 60%;
+  --chart-1: 205 90% 60%;
+  --chart-2: 0 70% 60%;
+  --chart-3: 40 90% 60%;
+  --chart-4: 140 70% 40%;
+  --chart-5: 260 60% 60%;
   --radius: 0.75rem;
-  --sidebar: oklch(0.16 0.005 285);
-  --sidebar-foreground: oklch(0.98 0 0);
-  --sidebar-primary: oklch(0.82 0.165 75);
-  --sidebar-primary-foreground: oklch(0.13 0.005 285);
-  --sidebar-accent: oklch(0.22 0.005 285);
-  --sidebar-accent-foreground: oklch(0.98 0 0);
-  --sidebar-border: oklch(0.28 0.005 285);
-  --sidebar-ring: oklch(0.82 0.165 75);
+  --sidebar: 210 60% 96%;
+  --sidebar-foreground: 215 12% 12%;
+  --sidebar-primary: 205 90% 60%;
+  --sidebar-primary-foreground: 210 100% 100%;
+  --sidebar-accent: 210 30% 96%;
+  --sidebar-accent-foreground: 215 12% 12%;
+  --sidebar-border: 210 16% 88%;
+  --sidebar-ring: 205 90% 60%;
 }
 
 @theme inline {

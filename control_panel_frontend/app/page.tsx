@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
-import type { Issue, IssueCategory } from "@/lib/types"
-import { issues as initialIssues, employees, jurisdictionZones } from "@/lib/mock-data"
+import type { Issue, IssueCategory, Employee } from "@/lib/types"
+import { issues as initialIssues, jurisdictionZones } from "@/lib/mock-data"
 import { DashboardHeader } from "@/components/dashboard/dashboard-header"
 import { JurisdictionMap } from "@/components/dashboard/jurisdiction-map"
 import { PriorityList } from "@/components/dashboard/priority-list"
@@ -14,6 +14,7 @@ export default function ControlRoomDashboard() {
   const [issues, setIssues] = useState<Issue[]>(initialIssues)
   const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null)
   const [selectedCategory, setSelectedCategory] = useState<IssueCategory | "all">("all")
+  const [employees, setEmployees] = useState<Employee[]>([])
 
   // Filter issues by category
   const filteredIssues = useMemo(() => {
@@ -134,6 +135,29 @@ export default function ControlRoomDashboard() {
     fetchIssues()
   }, [])
 
+  // Fetch employees from backend
+  useEffect(() => {
+    const fetchEmployees = async () => {
+      try {
+        const res = await fetch("http://localhost:8080/api/employees")
+        if (!res.ok) return
+        const data = await res.json()
+
+        const mapped: Employee[] = (data || []).map((e: any) => ({
+          id: e._id || e.id,
+          name: e.name || `${e.firstName || ''} ${e.lastName || ''}`.trim(),
+          role: e.role || e.position || "",
+        }))
+
+        setEmployees(mapped)
+      } catch (err) {
+        console.error("Failed to fetch employees:", err)
+      }
+    }
+
+    fetchEmployees()
+  }, [])
+
   return (
     <div className="flex h-screen flex-col bg-background">
       <DashboardHeader issues={issues} />
@@ -169,13 +193,13 @@ export default function ControlRoomDashboard() {
 
         {/* Right Panel - Issue Detail (Narrower) */}
         <aside className="w-80 shrink-0 border-l border-border bg-background p-3">
-          <IssueDetailPanel
-            issue={selectedIssue}
-            employees={employees}
-            onClose={handleCloseDetail}
-            onAssign={handleAssign}
-            onResolve={handleResolve}
-          />
+            <IssueDetailPanel
+              issue={selectedIssue}
+              employees={employees}
+              onClose={handleCloseDetail}
+              onAssign={handleAssign}
+              onResolve={handleResolve}
+            />
         </aside>
       </div>
     </div>
