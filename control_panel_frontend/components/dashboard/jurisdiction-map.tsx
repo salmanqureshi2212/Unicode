@@ -52,13 +52,24 @@ export function JurisdictionMap({ zones, issues, selectedIssue, onSelectIssue }:
     const initMap = async () => {
       // Mumbai center coordinates
       const center: [number, number] = [19.0760, 72.8377]
-      
+
+      // Constrain map to Greater Mumbai bounds (approximate)
+      const mumbaiBounds = L.latLngBounds([18.83, 72.77], [19.35, 72.99])
+
       const map = L.map(mapRef.current!, {
         center,
         zoom: 12,
+        minZoom: 11,
+        maxZoom: 18,
         zoomControl: false,
         attributionControl: false,
+        maxBounds: mumbaiBounds,
+        maxBoundsViscosity: 1.0,
+        worldCopyJump: false,
       })
+
+      // Ensure bounds are enforced after init
+      map.setMaxBounds(mumbaiBounds)
 
       // Add dark theme tile layer
       L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
@@ -69,6 +80,24 @@ export function JurisdictionMap({ zones, issues, selectedIssue, onSelectIssue }:
       L.control.zoom({ position: "bottomright" }).addTo(map)
 
       // Draw jurisdiction zones
+      // Highlight Greater Mumbai border
+      const mumbaiBorder = L.rectangle(mumbaiBounds, {
+        color: "#60a5fa",
+        weight: 3,
+        opacity: 0.95,
+        fill: false,
+        dashArray: "6,4",
+      }).addTo(map)
+
+      // Add subtle glow marker at top-left to label the city
+      L.marker([19.18, 72.82], {
+        icon: L.divIcon({
+          className: "mumbai-label",
+          html: `<div style="background: rgba(96,165,250,0.9); padding:6px 10px; border-radius:6px; color:#021124; font-weight:600; font-size:12px;">Mumbai</div>`,
+          iconSize: [0, 0],
+        }),
+      }).addTo(map)
+
       for (const zone of zones) {
         const colors = getZoneColor(zone.avgHealthScore)
         const polygon = L.polygon(

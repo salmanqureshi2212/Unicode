@@ -16,6 +16,7 @@ export interface Issue {
   reportedAt: string
   imageUrl: string
   category: IssueCategory
+  priority?: number
 }
 
 export interface Employee {

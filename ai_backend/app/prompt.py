@@ -25,7 +25,25 @@ Tasks:
 
 3. Assign severity: low, medium, severe
 4. Assign severity_score between 0 and 1
-5. Assign health_score between 0 and 100
+5. Health score calculation MUST follow this rule:
+
+Start with 100.
+
+Subtract damage penalty:
+- low severity → subtract 20
+- medium severity → subtract 40
+- severe severity → subtract 60
+
+Subtract zone penalty:
+- school_zone or hospital_zone → subtract 20
+- main_road → subtract 15
+- residential or industrial → subtract 10
+- low_traffic → subtract 5
+
+Final health_score = max(0, remaining value)
+
+Do NOT invent your own formula.
+
 6. Determine risk_level using:
    - health < 30 → Critical
    - health 30-60 → Warning

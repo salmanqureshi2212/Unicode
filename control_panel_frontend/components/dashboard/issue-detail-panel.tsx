@@ -125,17 +125,25 @@ export function IssueDetailPanel({
         {/* Before Photo */}
         <div className="mb-4">
           <h4 className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-            Before Photo
+            Issue Photo
           </h4>
           <div className="aspect-video overflow-hidden rounded-lg bg-secondary">
-            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-secondary to-muted">
-              <div className="text-center">
-                <div className="mb-2 text-4xl">
-                  {issue.category === "road" ? "🛣️" : issue.category === "bridge" ? "🌉" : issue.category === "utility" ? "⚡" : "🏢"}
+            {issue.imageUrl ? (
+              <img
+                src={`http://localhost:8080${issue.imageUrl}`}
+                alt={issue.title}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-secondary to-muted">
+                <div className="text-center">
+                  <div className="mb-2 text-4xl">
+                    {issue.category === "road" ? "🛣️" : issue.category === "bridge" ? "🌉" : issue.category === "utility" ? "⚡" : "🏢"}
+                  </div>
+                  <span className="text-xs text-muted-foreground">No Image Available</span>
                 </div>
-                <span className="text-xs text-muted-foreground">Infrastructure Image</span>
               </div>
-            </div>
+            )}
           </div>
         </div>
 
@@ -196,14 +204,26 @@ export function IssueDetailPanel({
           </p>
         </div>
 
-        {/* AI Insight */}
+        {/* AI Suggestion */}
         <div className="mb-4">
           <h4 className="mb-2 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
             <Sparkles className="h-3.5 w-3.5 text-primary" />
-            AI Insight
+            AI Suggestion
           </h4>
           <div className="rounded-lg border border-primary/20 bg-primary/5 p-3">
-            <p className="text-sm leading-relaxed text-foreground">{issue.aiInsight}</p>
+            <p className="text-sm leading-relaxed text-foreground">
+              {(() => {
+                try {
+                  if (typeof issue.aiInsight === "string" && issue.aiInsight.startsWith("{")) {
+                    const parsed = JSON.parse(issue.aiInsight)
+                    return parsed.ai_suggestion || parsed.aiSuggestion || "No suggestion available"
+                  }
+                  return issue.aiInsight || "No AI suggestion available"
+                } catch (e) {
+                  return issue.aiInsight || "No AI suggestion available"
+                }
+              })()}
+            </p>
           </div>
         </div>
       </div>

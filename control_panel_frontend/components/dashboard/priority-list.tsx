@@ -64,6 +64,12 @@ export function PriorityList({ issues, selectedIssue, onSelectIssue }: PriorityL
   const sortedIssues = [...issues]
     .filter((i) => i.status !== "resolved")
     .sort((a, b) => {
+      // If backend provided numeric priority, use it (descending)
+      if (typeof a.priority === "number" || typeof b.priority === "number") {
+        return (b.priority || 0) - (a.priority || 0)
+      }
+
+      // Fallback to riskLevel ordering
       const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 }
       const priorityDiff = priorityOrder[a.riskLevel] - priorityOrder[b.riskLevel]
       if (priorityDiff !== 0) return priorityDiff

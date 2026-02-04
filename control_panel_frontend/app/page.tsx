@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import type { Issue, IssueCategory } from "@/lib/types"
 import { issues as initialIssues, employees, jurisdictionZones } from "@/lib/mock-data"
 import { DashboardHeader } from "@/components/dashboard/dashboard-header"
@@ -81,6 +81,58 @@ export default function ControlRoomDashboard() {
       )
     }
   }
+
+  // Fetch issues from backend on load and sort by priority descending
+  useEffect(() => {
+    const fetchIssues = async () => {
+      try {
+        const res = await fetch("http://localhost:8080/api/issues?sortBy=priority")
+        if (!res.ok) return
+        const data = await res.json()
+
+        // Map backend issue shape to frontend Issue type
+        const mapped: Issue[] = data.map((it: any) => {
+          const riskRaw = it.aiAnalysis?.risk_level || it.aiAnalysis?.riskLevel || "Safe"
+          const riskLevelMap: Record<string, string> = {
+            Critical: "critical",
+            critical: "critical",
+            Warning: "high",
+            warning: "high",
+            Safe: "low",
+            safe: "low",
+          }
+
+          const riskLevel = (riskLevelMap[riskRaw] as any) || "medium"
+
+          const healthScore =
+            it.aiAnalysis?.health_score || it.healthScore || Math.max(30, Math.min(90, it.priority || 50))
+
+          return {
+            id: it._id,
+            title: it.title,
+            location: it.address || it.location?.address || "",
+            coordinates: { lat: it.location?.coordinates[1] || 0, lng: it.location?.coordinates[0] || 0 },
+            healthScore: Number(healthScore),
+            riskLevel: riskLevel as any,
+            status: (it.status === "in_progress" ? "in-progress" : it.status) as any,
+            assignedTo: it.assignedTo || null,
+            aiInsight: it.aiAnalysis ? JSON.stringify(it.aiAnalysis) : "",
+            reportedAt: it.createdAt || it.updatedAt,
+            imageUrl: it.imageUrl || it.image || "",
+            category: (it.category as any) || "infrastructure",
+            // include priority so UI can use numeric ordering if desired
+            priority: it.priority ?? 0,
+          }
+        })
+
+        setIssues(mapped)
+      } catch (err) {
+        console.error("Failed to fetch issues:", err)
+      }
+    }
+
+    fetchIssues()
+  }, [])
 
   return (
     <div className="flex h-screen flex-col bg-background">

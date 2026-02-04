@@ -298,6 +298,10 @@ router.get("/", async (req, res) => {
       case "oldest":
         sortOptions = { createdAt: 1 };
         break;
+      case "priority":
+        // Sort by computed priority score (higher first)
+        sortOptions = { priority: -1, createdAt: -1 };
+        break;
       case "upvotes":
         sortOptions = { upvotes: -1 };
         break;
