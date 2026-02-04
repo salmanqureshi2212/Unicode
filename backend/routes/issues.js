@@ -218,7 +218,7 @@ router.post("/", auth, upload.single("image"), async (req, res) => {
       issue,
     });
 
-    const imgres = await fetch(`http://localhost:5000/uploads/${req.file.filename}`);
+    const imgres = await fetch(`http://localhost:8080/uploads/${req.file.filename}`);
     const imageBytes = Buffer.from(await imgres.arrayBuffer());
     const imageBase64 = imageBytes.toString("base64");
     const data = {

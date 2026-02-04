@@ -9,7 +9,8 @@ const ReportIssue = () => {
     category: '',
     latitude: '',
     longitude: '',
-    address: ''
+    address: '',
+    zone: ''
   });
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
@@ -27,6 +28,14 @@ const ReportIssue = () => {
     { value: 'electricity', label: 'Electricity' },
     { value: 'parks', label: 'Parks & Recreation' },
     { value: 'other', label: 'Other' }
+  ];
+  const zone = [
+    { value: 'school_zone', label: 'School Zone' },
+    { value: 'hospital_zone', label: 'Hospital Zone' },
+    { value: 'main_road', label: 'Main Road' },
+    { value: 'residential', label: 'Residential Area' },
+    { value: 'industrial', label: 'Industrial Area' },
+    { value: 'low_traffic', label: 'Low Traffic Area' },
   ];
 
   const handleInputChange = (e) => {
@@ -128,6 +137,7 @@ const ReportIssue = () => {
       submitData.append('latitude', formData.latitude);
       submitData.append('longitude', formData.longitude);
       submitData.append('address', formData.address);
+      submitData.append('zone', formData.zone);
       submitData.append('image', image);
 
       await api.post('api/issues/', submitData, {
@@ -194,6 +204,27 @@ const ReportIssue = () => {
               />
             </div>
 
+            {/* Zone */}
+            <div>
+              <label htmlFor="zone" className="block text-sm font-medium text-gray-700 mb-2">
+                Zone *
+              </label>
+              <select
+                id="zone"
+                name="zone"
+                required
+                value={formData.zone}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              >
+                <option value="">Select a zone</option>
+                {zone.map((cat) => (
+                  <option key={cat.value} value={cat.value}>
+                    {cat.label}
+                  </option>
+                ))}
+              </select>
+            </div>
             {/* Category */}
             <div>
               <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
