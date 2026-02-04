@@ -63,10 +63,16 @@ const issueSchema = new mongoose.Schema({
       ref: 'User'
     }
   },
+  aiAnalysis: {
+    type: Object
+  },
   priority: {
+    type: Number,
+    default: 2
+  },
+  zone: {
     type: String,
-    enum: ['low', 'medium', 'high'],
-    default: 'medium'
+    enum:[ "school_zone", "hospital_zone", "main_road", "residential", "industrial", "low_traffic"]
   }
 }, {
   timestamps: true
