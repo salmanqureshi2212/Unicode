@@ -8,6 +8,7 @@ import { fileURLToPath } from 'url';
 import authRoutes from './routes/auth.js';
 import issueRoutes from './routes/issues.js';
 import userRoutes from './routes/users.js';
+import employeeRoutes from './routes/employee.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -44,7 +45,7 @@ db.once('open', () => {
 app.use('/api/auth', authRoutes);
 app.use('/api/issues', issueRoutes);
 app.use('/api/users', userRoutes);
-
+app.use('/api/employees', employeeRoutes);
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ message: 'CivicLink API is running!' });

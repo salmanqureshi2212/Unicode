@@ -50,6 +50,18 @@ const userSchema = new mongoose.Schema({
   avatar: {
     type: String,
     default: ''
+  },
+  Dependencies: [{
+    type: String,
+    ref: 'User'
+  }],
+  solvedIssues: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Issue'
+  }],
+  rating: {
+    type: Number,
+    default: 0
   }
 }, {
   timestamps: true

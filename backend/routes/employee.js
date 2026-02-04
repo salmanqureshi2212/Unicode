@@ -10,7 +10,7 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
 try {
-    const employees = await User.find({ typeOfUser: "Employee" , organisation: req.query.organisationId }).select("-password");
+    const employees = await User.find({ typeOfUser: "Employee" }).select("-password");
     res.json(employees);
   } catch (error) {
     console.error("Error fetching employees:", error);

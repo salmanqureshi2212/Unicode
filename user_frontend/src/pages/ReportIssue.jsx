@@ -1,68 +1,107 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Camera, MapPin, Upload, AlertCircle } from 'lucide-react';
-import api from '../services/api';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Camera, MapPin, Upload, AlertCircle } from "lucide-react";
+import api from "../services/api";
 const ReportIssue = () => {
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    category: '',
-    latitude: '',
-    longitude: '',
-    address: '',
-    zone: ''
+    title: "",
+    description: "",
+    category: "",
+    latitude: "",
+    longitude: "",
+    address: "",
+    zone: "",
   });
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [locationLoading, setLocationLoading] = useState(false);
-  
+
   const navigate = useNavigate();
 
   const categories = [
-    { value: 'roads', label: 'Roads & Transportation' },
-    { value: 'lighting', label: 'Street Lighting' },
-    { value: 'sanitation', label: 'Waste & Sanitation' },
-    { value: 'water', label: 'Water Supply' },
-    { value: 'electricity', label: 'Electricity' },
-    { value: 'parks', label: 'Parks & Recreation' },
-    { value: 'other', label: 'Other' }
+    { value: "roads", label: "Roads & Transportation" },
+    { value: "lighting", label: "Street Lighting" },
+    { value: "sanitation", label: "Waste & Sanitation" },
+    { value: "water", label: "Water Supply" },
+    { value: "electricity", label: "Electricity" },
+    { value: "parks", label: "Parks & Recreation" },
+    { value: "other", label: "Other" },
   ];
   const zone = [
-    { value: 'school_zone', label: 'School Zone' },
-    { value: 'hospital_zone', label: 'Hospital Zone' },
-    { value: 'main_road', label: 'Main Road' },
-    { value: 'residential', label: 'Residential Area' },
-    { value: 'industrial', label: 'Industrial Area' },
-    { value: 'low_traffic', label: 'Low Traffic Area' },
+    { value: "school_zone", label: "School Zone" },
+    { value: "hospital_zone", label: "Hospital Zone" },
+    { value: "main_road", label: "Main Road" },
+    { value: "residential", label: "Residential Area" },
+    { value: "industrial", label: "Industrial Area" },
+    { value: "low_traffic", label: "Low Traffic Area" },
   ];
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
-  const handleImageChange = (e) => {
+  const verifyImage = async (file) => {
+    const formData = new FormData();
+    formData.append("media", file);
+    formData.append("models", "genai");
+    formData.append("api_user", "1161527463");
+    formData.append("api_secret", "wVnwV3YU4YuAH3ZvjyBpuzew8cnP4HpA");
+
+    const res = await fetch("https://api.sightengine.com/1.0/check.json", {
+      method: "POST",
+      body: formData,
+    });
+    if (res && res.ok) {
+      var data = await res.json();
+      console.log(data);
+      return data; // 👈 only return data
+    } else {
+      return null;
+    }
+  };
+
+  const handleImageChange = async (e) => {
     const file = e.target.files[0];
+
     if (file) {
+      setError(null);
       setImage(file);
       const reader = new FileReader();
       reader.onload = (e) => {
         setImagePreview(e.target.result);
       };
       reader.readAsDataURL(file);
+      // const result = await verifyImage(file);
+      // const aiScore = result?.type?.ai_generated ?? 0;
+      const aiScore = 0.5; // Mock score for testing
+      if (aiScore && aiScore >= 0.7) {
+        // 🚨 AI generated
+        // block / reject / warn
+        setError("AI-generated images are not allowed");
+        alert(
+          "AI-generated images are not allowed. Please upload a real photo.",
+        );
+        setImage(null);
+        setImagePreview(null);
+      } else {
+        // ✅ Real image
+        console.log("Real image detected");
+        // allow / continue
+      }
     }
   };
 
   const getCurrentLocation = () => {
     setLocationLoading(true);
-    
+
     if (!navigator.geolocation) {
-      setError('Geolocation is not supported by this browser');
+      setError("Geolocation is not supported by this browser");
       setLocationLoading(false);
       return;
     }
@@ -70,84 +109,84 @@ const ReportIssue = () => {
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords;
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
           latitude: latitude.toString(),
-          longitude: longitude.toString()
+          longitude: longitude.toString(),
         }));
 
         // Reverse geocode to get address
         try {
           const response = await fetch(
-            `https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=YOUR_API_KEY`
+            `https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=YOUR_API_KEY`,
           );
           const data = await response.json();
-          
+
           if (data.results && data.results.length > 0) {
-            setFormData(prev => ({
+            setFormData((prev) => ({
               ...prev,
-              address: data.results[0].formatted
+              address: data.results[0].formatted,
             }));
           } else {
-            setFormData(prev => ({
+            setFormData((prev) => ({
               ...prev,
-              address: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`
+              address: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`,
             }));
           }
         } catch (error) {
-          console.error('Geocoding error:', error);
-          setFormData(prev => ({
+          console.error("Geocoding error:", error);
+          setFormData((prev) => ({
             ...prev,
-            address: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`
+            address: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`,
           }));
         }
-        
+
         setLocationLoading(false);
       },
       (error) => {
-        console.error('Geolocation error:', error);
-        setError('Unable to get your location. Please enter manually.');
+        console.error("Geolocation error:", error);
+        setError("Unable to get your location. Please enter manually.");
         setLocationLoading(false);
-      }
+      },
     );
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setError("");
 
     if (!image) {
-      setError('Please select an image');
+      setError("Please select an image");
       setLoading(false);
       return;
     }
 
     if (!formData.latitude || !formData.longitude) {
-      setError('Please provide location information');
+      setError("Please provide location information");
       setLoading(false);
       return;
     }
 
     try {
       const submitData = new FormData();
-      submitData.append('title', formData.title);
-      submitData.append('description', formData.description);
-      submitData.append('category', formData.category);
-      submitData.append('latitude', formData.latitude);
-      submitData.append('longitude', formData.longitude);
-      submitData.append('address', formData.address);
-      submitData.append('zone', formData.zone);
-      submitData.append('image', image);
+      submitData.append("title", formData.title);
+      submitData.append("description", formData.description);
+      submitData.append("category", formData.category);
+      submitData.append("latitude", formData.latitude);
+      submitData.append("longitude", formData.longitude);
+      submitData.append("address", formData.address);
+      submitData.append("zone", formData.zone);
+      submitData.append("image", image);
 
-      await api.post('api/issues/', submitData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+      await api.post("api/issues/", submitData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
-      navigate('/dashboard');
+      navigate("/dashboard");
     } catch (error) {
-      console.error('Error submitting issue:', error);
-      setError(error.response?.data?.message || 'Failed to submit issue');
+      console.error("Error submitting issue:", error);
+      setError(error.response?.data?.message || "Failed to submit issue");
     } finally {
       setLoading(false);
     }
@@ -158,8 +197,12 @@ const ReportIssue = () => {
       <div className="max-w-2xl mx-auto">
         <div className="bg-white rounded-lg shadow-sm p-8">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Report an Issue</h1>
-            <p className="text-gray-600">Help improve your community by reporting local problems</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              Report an Issue
+            </h1>
+            <p className="text-gray-600">
+              Help improve your community by reporting local problems
+            </p>
           </div>
 
           {error && (
@@ -172,7 +215,10 @@ const ReportIssue = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Title */}
             <div>
-              <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="title"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Issue Title *
               </label>
               <input
@@ -189,7 +235,10 @@ const ReportIssue = () => {
 
             {/* Description */}
             <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="description"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Description *
               </label>
               <textarea
@@ -206,7 +255,10 @@ const ReportIssue = () => {
 
             {/* Zone */}
             <div>
-              <label htmlFor="zone" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="zone"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Zone *
               </label>
               <select
@@ -227,7 +279,10 @@ const ReportIssue = () => {
             </div>
             {/* Category */}
             <div>
-              <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="category"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Category *
               </label>
               <select
@@ -264,12 +319,17 @@ const ReportIssue = () => {
                   ) : (
                     <MapPin className="h-5 w-5 mr-2" />
                   )}
-                  {locationLoading ? 'Getting Location...' : 'Use Current Location'}
+                  {locationLoading
+                    ? "Getting Location..."
+                    : "Use Current Location"}
                 </button>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor="latitude" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="latitude"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Latitude
                     </label>
                     <input
@@ -285,7 +345,10 @@ const ReportIssue = () => {
                     />
                   </div>
                   <div>
-                    <label htmlFor="longitude" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="longitude"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Longitude
                     </label>
                     <input
@@ -303,7 +366,10 @@ const ReportIssue = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="address"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Address
                   </label>
                   <input
@@ -322,7 +388,10 @@ const ReportIssue = () => {
 
             {/* Image Upload */}
             <div>
-              <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="image"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Photo Evidence *
               </label>
               <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
@@ -375,7 +444,7 @@ const ReportIssue = () => {
                 ) : (
                   <Upload className="h-5 w-5 mr-2" />
                 )}
-                {loading ? 'Submitting...' : 'Submit Issue'}
+                {loading ? "Submitting..." : "Submit Issue"}
               </button>
             </div>
           </form>

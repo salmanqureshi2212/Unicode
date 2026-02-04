@@ -9,6 +9,10 @@ const organisationSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  organisation:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Organisation",
+  },
   location: {
     type: {
       type: String,

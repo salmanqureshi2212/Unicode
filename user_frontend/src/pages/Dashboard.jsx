@@ -29,7 +29,7 @@ const Dashboard = () => {
       setStats(statsRes.data.stats);
       
       // Filter user's issues
-      const userIssuesData = issuesRes.data.filter(issue => issue.userId._id === user.id);
+      const userIssuesData = issuesRes.data.filter(issue => issue.userId._id === user._id);
       setUserIssues(userIssuesData);
     } catch (error) {
       console.error('Error fetching user data:', error);
