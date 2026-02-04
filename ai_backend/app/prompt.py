@@ -25,10 +25,10 @@ Tasks:
 
 3. Assign severity: low, medium, severe
 4. Assign severity_score between 0 and 1
-5. Calculate health_score between 0 and 100
+5. Assign health_score between 0 and 100
 6. Determine risk_level using:
    - health < 30 → Critical
-   - health 30–60 → Warning
+   - health 30-60 → Warning
    - health > 60 → Safe
 
 7. Generate a short safety-focused ai_suggestion.
