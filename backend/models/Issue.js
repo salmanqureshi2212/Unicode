@@ -60,7 +60,8 @@ const issueSchema = new mongoose.Schema({
     ref: 'User'
   }],
   resolvedProof: {
-    imageUrl: String,
+    beforeImageUrl: String,
+    afterImageUrl: String,
     description: String,
     resolvedAt: Date,
     resolvedBy: {

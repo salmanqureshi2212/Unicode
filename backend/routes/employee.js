@@ -2,7 +2,7 @@ import express from "express";
 import User from "../models/User.js";
 import Issue from "../models/Issue.js";
 import organisation from "../models/organisation.js";
-
+import auth from '../middleware/auth.js';
 
 
 const router = express.Router();
@@ -20,9 +20,9 @@ try {
 
 })
 
-router.get("/employee/:id", async (req, res) => {
+router.get("/job",auth, async (req, res) => {
   try {
-    const employee = await User.findById(req.params.id).select("-password").populate('assignedIssues');
+    const employee = await User.findById(req.userId).select("-password").populate('assignedIssues');
     res.json(employee);
   } catch (error) {
     console.error("Error fetching employee:", error);

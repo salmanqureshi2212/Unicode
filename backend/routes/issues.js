@@ -7,7 +7,7 @@ import auth from "../middleware/auth.js";
 import fs from "fs";
 // import fetch from "node-fetch"; // or axios
 const router = express.Router();
-const AIURL = "http://192.168.32.213:8000";
+const AIURL = "http://localhost:8000";
 import { fileURLToPath } from "url";
 
 // Define __dirname manually for ES module
@@ -375,51 +375,10 @@ router.post("/:id/upvote", auth, async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-
-// Resolve issue
-// router.post('/:id/resolve', auth, upload.single('proofImage'), async (req, res) => {
-//   try {
-//     const { description } = req.body;
-//     const issue = await Issue.findById(req.params.id);
-
-//     if (!issue) {
-//       return res.status(404).json({ message: 'Issue not found' });
-//     }
-
-//     // Check if user owns the issue or is admin
-//     if (issue.userId.toString() !== req.userId) {
-//       return res.status(403).json({ message: 'Not authorized' });
-//     }
-
-//     issue.status = 'resolved';
-//     issue.resolvedProof = {
-//       imageUrl: req.file ? `/uploads/${req.file.filename}` : '',
-//       description,
-//       resolvedAt: new Date(),
-//       resolvedBy: req.userId
-//     };
-
-//     await issue.save();
-//     await issue.populate('userId', 'username avatar');
-
-//     // Update user's resolved count and karma
-//     await User.findByIdAndUpdate(req.userId, {
-//       $inc: { issuesResolved: 1, karma: 15 }
-//     });
-
-//     res.json({
-//       message: 'Issue marked as resolved',
-//       issue
-//     });
-//   } catch (error) {
-//     console.error('Resolve issue error:', error);
-//     res.status(500).json({ message: 'Server error' });
-//   }
-// });
 router.post(
   "/:id/resolve",
   auth,
-  upload.single("proofImage"),
+  upload.array("proofImage", 2),
   async (req, res) => {
     try {
       const { description } = req.body;
@@ -428,26 +387,32 @@ router.post(
       if (!issue) {
         return res.status(404).json({ message: "Issue not found" });
       }
-
-      //NEW: Allow any authenticated user to resolve issues, not just the reporter
-      if (!req.file) {
-        return res.status(400).json({ message: "Proof image is required" });
+      console.log(req.files)
+      // Validate images
+      if (!req.files || req.files.length !== 2) {
+        return res
+          .status(400)
+          .json({ message: "Both before and after images are required" });
       }
 
-      issue.status = "resolved";
+      const beforeImage = req.files[0];
+      const afterImage = req.files[1];
+
+      issue.status = "completed";
       issue.resolvedProof = {
-        imageUrl: req.file ? `/uploads/${req.file.filename}` : "",
+        beforeImageUrl: `/uploads/${beforeImage.filename}`,
+        afterImageUrl: `/uploads/${afterImage.filename}`,
         description,
         resolvedAt: new Date(),
         resolvedBy: req.userId,
       };
 
       await issue.save();
+
       await issue.populate("userId", "username avatar");
-      //NEW: Populate resolver information
       await issue.populate("resolvedProof.resolvedBy", "username avatar");
 
-      //NEW: Give karma points to the resolver, not the reporter
+      // Karma to resolver
       await User.findByIdAndUpdate(req.userId, {
         $inc: { issuesResolved: 1, karma: 15 },
       });
@@ -460,7 +425,6 @@ router.post(
       console.error("Resolve issue error:", error);
       res.status(500).json({ message: "Server error" });
     }
-  },
+  }
 );
-
 export default router;
