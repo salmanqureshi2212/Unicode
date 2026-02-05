@@ -24,6 +24,7 @@ interface CompletedTask {
   completedDate: string;
   rating: number;
 }
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 const completedTasks: CompletedTask[] = [
   {
@@ -75,7 +76,7 @@ export default function ProfilePage() {
   useEffect(() => {
     const handle = async () => {
       
-      const res = await fetch("http://localhost:8080/api/auth/me", {
+      const res = await fetch(`${apiUrl}/api/auth/me`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("employeeToken")}`,
         },

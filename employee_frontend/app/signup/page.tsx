@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Building2, ArrowLeft, Eye, EyeOff, Upload, UserPlus, X, Loader2 } from "lucide-react"
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 export default function SignupPage() {
   const router = useRouter()
@@ -103,7 +104,7 @@ export default function SignupPage() {
       employee: formData.employee,
     }
     // Simulate signup - in production, this would be an API call
-    const res = await fetch("http://localhost:8080/api/auth/signup", {
+    const res = await fetch(`${apiUrl}/api/auth/signup`, {
       method: "POST",
       body: JSON.stringify(reqData),
     })

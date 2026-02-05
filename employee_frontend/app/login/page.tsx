@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Building2, ArrowLeft, Eye, EyeOff, Loader2 } from "lucide-react"
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 export default function LoginPage() {
   const router = useRouter()
@@ -31,7 +32,7 @@ export default function LoginPage() {
     }
     setIsLoading(true)
 
-   const response = await fetch("http://localhost:8080/api/auth/login", {
+   const response = await fetch(`${apiUrl}/api/auth/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

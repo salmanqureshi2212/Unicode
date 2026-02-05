@@ -29,7 +29,7 @@ interface Task {
   completedDate?: string;
   rating?: number;
 }
-
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 const initialTasks: Task[] = [
   {
     id: "1",
@@ -108,7 +108,7 @@ export default function HomePage() {
         return;
       }
 
-      const response = await fetch("http://localhost:8080/api/employees/job", {
+      const response = await fetch(`${apiUrl}/api/employees/job`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
