@@ -62,7 +62,7 @@ function formatRelativeTime(dateString: string) {
 export function PriorityList({ issues, selectedIssue, onSelectIssue }: PriorityListProps) {
   // Sort issues by priority (critical first, then by health score)
   const sortedIssues = [...issues]
-    .filter((i) => i.status !== "resolved")
+    .filter((i) => i.status !== "resolved" && i.status !== "completed")
     .sort((a, b) => {
       // If backend provided numeric priority, use it (descending)
       if (typeof a.priority === "number" || typeof b.priority === "number") {
