@@ -7,7 +7,7 @@ import auth from "../middleware/auth.js";
 import fs from "fs";
 // import fetch from "node-fetch"; // or axios
 const router = express.Router();
-const AIURL = "http://192.168.32.213:8000";
+const AIURL = "http://localhost:8000";
 import { fileURLToPath } from "url";
 
 // Define __dirname manually for ES module
