@@ -20,13 +20,13 @@ const categories: { id: IssueCategory | "all"; label: string; icon: typeof Circl
 
 export function CategoryFilter({ issues, selectedCategory, onSelectCategory }: CategoryFilterProps) {
   const getCategoryCount = (category: IssueCategory | "all") => {
-    if (category === "all") return issues.filter((i) => i.status !== "resolved" && i.status !== "completed").length
-    return issues.filter((i) => i.category === category && i.status !== "resolved" && i.status !== "completed").length
+    if (category === "all") return issues.filter((i) => i.status !== "resolved").length
+    return issues.filter((i) => i.category === category && i.status !== "resolved").length
   }
 
   const getCriticalCount = (category: IssueCategory | "all") => {
-    if (category === "all") return issues.filter((i) => i.riskLevel === "critical" && i.status !== "resolved" && i.status !== "completed").length
-    return issues.filter((i) => i.category === category && i.riskLevel === "critical" && i.status !== "resolved" && i.status !== "completed").length
+    if (category === "all") return issues.filter((i) => i.riskLevel === "critical" && i.status !== "resolved").length
+    return issues.filter((i) => i.category === category && i.riskLevel === "critical" && i.status !== "resolved").length
   }
 
   return (

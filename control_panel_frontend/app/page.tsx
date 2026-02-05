@@ -51,16 +51,15 @@ export default function ControlRoomDashboard() {
         }
 
         const data = await res.json()
-        console.log("Assignment successful:", data)
+        console.log("Assignment response:", data)
 
-        // Update local state with response data
-        const updatedIssue = data.issue
+        // Update local state with proper fallbacks
         setIssues((prev) =>
           prev.map((issue) =>
             issue.id === issueId
               ? {
                   ...issue,
-                  assignedTo: updatedIssue.assignedTo?._id || employeeId,
+                  assignedTo: employeeId,
                   status: "assigned" as const,
                 }
               : issue
@@ -71,7 +70,7 @@ export default function ControlRoomDashboard() {
             prev
               ? {
                   ...prev,
-                  assignedTo: updatedIssue.assignedTo?._id || employeeId,
+                  assignedTo: employeeId,
                   status: "assigned" as const,
                 }
               : null

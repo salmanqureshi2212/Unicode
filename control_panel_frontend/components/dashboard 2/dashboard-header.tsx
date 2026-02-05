@@ -9,8 +9,8 @@ interface DashboardHeaderProps {
 }
 
 export function DashboardHeader({ issues }: DashboardHeaderProps) {
-  const criticalCount = issues.filter((i) => i.riskLevel === "critical" && i.status !== "resolved" && i.status !== "completed").length
-  const openCount = issues.filter((i) => ["open", "assigned", "in_progress"].includes(i.status)).length
+  const criticalCount = issues.filter((i) => i.riskLevel === "critical" && i.status !== "resolved").length
+  const openCount = issues.filter((i) => i.status === "open").length
   const resolvedToday = issues.filter((i) => {
     const today = new Date()
     const reportedDate = new Date(i.reportedAt)
