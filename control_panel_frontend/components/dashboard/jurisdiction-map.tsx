@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react"
 import type { Issue, JurisdictionZone } from "@/lib/types"
 import { cn } from "@/lib/utils"
-import L from "leaflet"
 import "leaflet/dist/leaflet.css"
 
 interface JurisdictionMapProps {
@@ -50,6 +49,9 @@ export function JurisdictionMap({ zones, issues, selectedIssue, onSelectIssue }:
     if (!mapRef.current || mapInstanceRef.current) return
 
     const initMap = async () => {
+      // Dynamic import of Leaflet to avoid SSR issues
+      const L = (await import("leaflet")).default
+
       // Mumbai center coordinates
       const center: [number, number] = [19.0760, 72.8377]
 
@@ -71,8 +73,8 @@ export function JurisdictionMap({ zones, issues, selectedIssue, onSelectIssue }:
       // Ensure bounds are enforced after init
       map.setMaxBounds(mumbaiBounds)
 
-      // Add dark theme tile layer
-      L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+      // Add light theme tile layer
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
         maxZoom: 19,
       }).addTo(map)
 
@@ -82,18 +84,18 @@ export function JurisdictionMap({ zones, issues, selectedIssue, onSelectIssue }:
       // Draw jurisdiction zones
       // Highlight Greater Mumbai border
       const mumbaiBorder = L.rectangle(mumbaiBounds, {
-        color: "#60a5fa",
-        weight: 3,
-        opacity: 0.95,
+        color: "#3b82f6",
+        weight: 2,
+        opacity: 0.8,
         fill: false,
-        dashArray: "6,4",
+        dashArray: "5,5",
       }).addTo(map)
 
       // Add subtle glow marker at top-left to label the city
       L.marker([19.18, 72.82], {
         icon: L.divIcon({
           className: "mumbai-label",
-          html: `<div style="background: rgba(96,165,250,0.9); padding:6px 10px; border-radius:6px; color:#021124; font-weight:600; font-size:12px;">Mumbai</div>`,
+          html: `<div style="background: hsl(205 90% 60%); padding:8px 12px; border-radius:6px; color:white; font-weight:600; font-size:13px; box-shadow: 0 2px 8px rgba(205,150,150,0.2);">Greater Mumbai</div>`,
           iconSize: [0, 0],
         }),
       }).addTo(map)
@@ -113,29 +115,28 @@ export function JurisdictionMap({ zones, issues, selectedIssue, onSelectIssue }:
 
         // Add zone label
         const center = polygon.getBounds().getCenter()
-        L.marker(center, {
-          icon: L.divIcon({
-            className: "zone-label",
-            html: `<div style="
-              background: rgba(24, 24, 27, 0.95);
-              padding: 6px 10px;
-              border-radius: 6px;
-              border: 1px solid ${colors.stroke};
-              color: white;
-              font-size: 11px;
-              font-weight: 500;
-              white-space: nowrap;
-              box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-            ">
-              <div style="font-weight: 600; margin-bottom: 2px;">${zone.name}</div>
-              <div style="display: flex; align-items: center; gap: 6px; font-size: 10px; opacity: 0.8;">
-                <span>${zone.issueCount} issues</span>
-                <span style="color: ${colors.stroke};">${zone.avgHealthScore}%</span>
-              </div>
-            </div>`,
-            iconSize: [0, 0],
-          }),
-        }).addTo(map)
+        if (zone.issueCount > 0) {
+          L.marker(center, {
+            icon: L.divIcon({
+              className: "zone-label",
+              html: `<div style="
+                background: white;
+                padding: 8px 12px;
+                border-radius: 6px;
+                border: 2px solid ${colors.stroke};
+                color: #1a1a1a;
+                font-size: 12px;
+                font-weight: 600;
+                white-space: nowrap;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+              ">
+                <div style="margin-bottom: 4px;">${zone.issueCount} active issue${zone.issueCount > 1 ? "s" : ""}</div>
+                <div style="font-size: 11px; color: ${colors.stroke}; font-weight: 700;">Health: ${zone.avgHealthScore}%</div>
+              </div>`,
+              iconSize: [0, 0],
+            }),
+          }).addTo(map)
+        }
       }
 
       // Add issue markers

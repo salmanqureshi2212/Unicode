@@ -271,10 +271,10 @@ export function IssueDetailPanel({
           <Button
             className="flex-1 bg-success hover:bg-success/90 text-success-foreground"
             onClick={() => onResolve(issue.id)}
-            disabled={issue.status === "resolved"}
+            disabled={issue.status !== "assigned" && issue.status !== "open"}
           >
             <CheckCircle2 className="mr-2 h-4 w-4" />
-            Mark Resolved
+            {issue.status === "assigned" ? "Mark Completed" : "Completed"}
           </Button>
         </div>
       </div>

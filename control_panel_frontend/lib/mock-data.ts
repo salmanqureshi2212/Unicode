@@ -197,39 +197,15 @@ export const issues: Issue[] = [
 
 export const jurisdictionZones: JurisdictionZone[] = [
   {
-    id: "zone-1",
-    name: "South Mumbai",
+    id: "zone-mumbai",
+    name: "Greater Mumbai",
     bounds: [
-      { lat: 18.92, lng: 72.81 },
-      { lat: 18.97, lng: 72.81 },
-      { lat: 18.97, lng: 72.85 },
-      { lat: 18.92, lng: 72.85 },
+      { lat: 18.83, lng: 72.77 },
+      { lat: 19.35, lng: 72.77 },
+      { lat: 19.35, lng: 72.99 },
+      { lat: 18.83, lng: 72.99 },
     ],
-    issueCount: 4,
-    avgHealthScore: 42,
-  },
-  {
-    id: "zone-2",
-    name: "Bandra-Worli Corridor",
-    bounds: [
-      { lat: 19.02, lng: 72.81 },
-      { lat: 19.07, lng: 72.81 },
-      { lat: 19.07, lng: 72.85 },
-      { lat: 19.02, lng: 72.85 },
-    ],
-    issueCount: 4,
-    avgHealthScore: 50,
-  },
-  {
-    id: "zone-3",
-    name: "Andheri-Goregaon Belt",
-    bounds: [
-      { lat: 19.10, lng: 72.83 },
-      { lat: 19.18, lng: 72.83 },
-      { lat: 19.18, lng: 72.88 },
-      { lat: 19.10, lng: 72.88 },
-    ],
-    issueCount: 5,
-    avgHealthScore: 48,
+    issueCount: 0,
+    avgHealthScore: 0,
   },
 ]

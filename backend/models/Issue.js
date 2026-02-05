@@ -47,8 +47,13 @@ const issueSchema = new mongoose.Schema({
   }],
   status: {
     type: String,
-    enum: ['open', 'in_progress', 'resolved'],
+    enum: ['open', 'assigned', 'in_progress', 'resolved', 'completed'],
     default: 'open'
+  },
+  assignedTo: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null
   },
   upvotes: [{
     type: mongoose.Schema.Types.ObjectId,
